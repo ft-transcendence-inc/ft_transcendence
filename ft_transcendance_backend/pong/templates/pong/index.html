@@ -1,15 +1,24 @@
-<!-- pong/templates/pong/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    {% load static %}  <!-- Ensure this line is included -->
+    <title>Pong App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="{% load static %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <style>
+        #ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">My Site</a>
+        <a class="navbar-brand" href="#" onclick="loadPage('home')">Pong App</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -24,6 +33,5 @@
     <div class="container">
         <div id="content"></div>
     </div>
-    <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>

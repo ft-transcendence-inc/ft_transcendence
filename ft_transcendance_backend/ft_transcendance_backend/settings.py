@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u*%%$ie%b6nsh76%is1u*s+1kcie&fi^wq$-m1c1ncx27v@ty-'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-u*%%$ie%b6nsh76%is1u*s+1kcie&fi^wq$-m1c1ncx27v@ty-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,10 +40,10 @@ INSTALLED_APPS = [
 ]
 
 # ASGI (Asynchronous Server Gateway Interface) is a specification for Python web servers
-#  and applications to communicate with each other. 
-#  It is designed to provide a standardized interface for asynchronous applications, 
-#  enabling the development of real-time, asynchronous web applications., 
-#  successor for WSGI (Web Server Gateway Interface)
+# and applications to communicate with each other.
+# It is designed to provide a standardized interface for asynchronous applications,
+# enabling the development of real-time, asynchronous web applications., 
+# successor for WSGI (Web Server Gateway Interface)
 ASGI_APPLICATION = 'ft_transcendance_backend.asgi.application'
 
 CHANNEL_LAYERS = {
