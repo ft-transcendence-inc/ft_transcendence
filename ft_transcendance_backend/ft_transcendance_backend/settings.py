@@ -27,9 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,7 +35,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pong',
+    'channels',
 ]
+
+# ASGI (Asynchronous Server Gateway Interface) is a specification for Python web servers
+#  and applications to communicate with each other. 
+#  It is designed to provide a standardized interface for asynchronous applications, 
+#  enabling the development of real-time, asynchronous web applications., 
+#  successor for WSGI (Web Server Gateway Interface)
+ASGI_APPLICATION = 'ft_transcendance_backend.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,7 +66,7 @@ ROOT_URLCONF = 'ft_transcendance_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [], 
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,7 +78,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 WSGI_APPLICATION = 'ft_transcendance_backend.wsgi.application'
 
