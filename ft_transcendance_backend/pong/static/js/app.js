@@ -1,24 +1,88 @@
 document.addEventListener('DOMContentLoaded', function() {
-    loadPage('home');  // Load the default page on initial load
+    loadPage('home');
 
-    // Set up WebSocket connection
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/');
+    let socket;
 
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const ballPosition = data['ball_position'];
-        // Update the ball position in the game
-        console.log('Ball position:', ballPosition);
-    };
+    function connectWebSocket() {
+        socket = new WebSocket('ws://' + window.location.host + '/ws/pong/');
 
-    function sendBallPosition(position) {
-        socket.send(JSON.stringify({
-            'ball_position': position
-        }));
+        socket.onopen = function() {
+            console.log("WebSocket connection established");
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const ballPosition = data['ball_position'];
+            // Update the ball position in the game
+            updateBallPosition(ballPosition);
+        };
+
+        socket.onclose = function() {
+            console.log("WebSocket connection closed, attempting to reconnect...");
+            setTimeout(connectWebSocket, 1000);  // Attempt to reconnect after 1 second
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+            socket.close();
+        };
     }
 
-    // Example: Sending the ball position
-    // sendBallPosition({ x: 50, y: 100 });
+    function sendBallPosition(position) {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({
+                'ball_position': position
+            }));
+        } else {
+            console.log("WebSocket is not open: readyState =", socket.readyState);
+        }
+    }
+
+    // Initialize ball position
+    let ballPosition = { x: 100, y: 100 };
+
+    // Update ball position on the screen
+    function updateBallPosition(position) {
+        ballPosition = position;
+        const ballElement = document.getElementById('ball');
+        if (ballElement) {
+            ballElement.style.left = position.x + 'px';
+            ballElement.style.top = position.y + 'px';
+        }
+    }
+
+    // Handle keyboard events to move the ball
+    document.addEventListener('keydown', function(event) {
+        const step = 10;
+        switch (event.key) {
+            case 'ArrowUp':
+                ballPosition.y -= step;
+                break;
+            case 'ArrowDown':
+                ballPosition.y += step;
+                break;
+            case 'ArrowLeft':
+                ballPosition.x -= step;
+                break;
+            case 'ArrowRight':
+                ballPosition.x += step;
+                break;
+            default:
+                return;  // Exit this handler for other keys
+        }
+
+        // Send the new ball position to the server
+        sendBallPosition(ballPosition);
+
+        // Update the local ball position (for this client)
+        updateBallPosition(ballPosition);
+    });
+
+    // Set initial ball position
+    updateBallPosition(ballPosition);
+
+    // Connect WebSocket
+    connectWebSocket();
 });
 
 function loadPage(page) {
@@ -27,7 +91,7 @@ function loadPage(page) {
         case 'home':
             content.innerHTML = `
                 <h1>Welcome to the Pong App</h1>
-                <p>This is the home page.</p>
+                <div id="ball" style="left: 100px; top: 100px; width: 20px; height: 20px; background-color: red; position: absolute;"></div>
             `;
             break;
         case 'about':
