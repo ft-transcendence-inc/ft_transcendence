@@ -1,18 +1,43 @@
 import asyncio
+
 import websockets
 
-# echo server that sends back the received message
-async def echo(websocket, path):
-	async for message in websocket:
-		print("Received:", message)
-		await websocket.send("Echo: " + message)
-		# sleep for 1 second and send another message in a loop
-		for i in range(5):
-			await asyncio.sleep(1)
-			await websocket.send("Echo: " + message + " " + str(i))
+# empty set of objects
+connected_clients = set()
 
-# listen on localhost:8765
-start_server = websockets.serve(echo, "localhost", 8765)
+async def handler(websocket):
+	connected_clients.add(websocket)
+	try:
+		# Keep the connection open and handle incoming messages if needed
+		async for message in websocket:
+			await broadcaster(message)
+	except websockets.exceptions.ConnectionClosed as e:
+		print(f"Client disconnected: {e}")
+	finally:
+		# Remove the client from the set of connected clients
+		connected_clients.remove(websocket)
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+async def broadcaster(message):
+		tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
+		# Wait for all tasks to complete
+		await asyncio.gather(*tasks)
+            
+
+# async def broadcaster():
+# 	while True:
+# 		if connected_clients:
+# 			message = "Hello!"
+# 			tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
+# 			# Wait for all tasks to complete
+# 			await asyncio.gather(*tasks)
+# 		await asyncio.sleep(5)
+            
+
+async def main():
+    async with websockets.serve(handler, "", 8001):
+        await asyncio.Future()
+		# await broadcaster()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

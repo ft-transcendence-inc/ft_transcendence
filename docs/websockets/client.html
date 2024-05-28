@@ -8,12 +8,27 @@
 <body>
 	<h1>WebSocket Example</h1>
     <button id="startButton">Start WebSocket</button>
+	<button id="message">send message</button>
+	<input id="textMessage"></input>
+	<br>
+	<textarea id="display"></textarea>
 
     <script>
+		let messages = ["first"];
+		let socket;
+
+		function displayData(array)
+		{
+			const displayElement = document.getElementById('display');
+
+			const arrayString = array.join(', ');
+
+			displayElement.textContent = `Data: ${arrayString}`;
+		}
         // Function to start WebSocket connection
 		function startWebSocket() {
 			// Create WebSocket connection
-			let socket = new WebSocket("ws://localhost:8765");
+			socket = new WebSocket("ws://localhost:8001");
 
 			// when the connection is open, send some data to the server
 			socket.onopen = function(e) {
@@ -24,6 +39,8 @@
 			
 			// receive messages from the server
 			socket.onmessage = function(event) {
+				messages.push(event.data);
+				displayData(messages);
 				console.log(`[message] Data received from server: ${event.data}`);
 			};
 
@@ -42,9 +59,14 @@
 			};
 		}
 
+		function sendMessage(){
+			let message = document.getElementById("textMessage").value;
+			socket.send(message);
+		}
 
         // start WebSocket connection when button is clicked
         document.getElementById("startButton").addEventListener("click", startWebSocket);
+		document.getElementById("message").addEventListener("click", sendMessage);
     </script>
 </body>
 </html>
