@@ -1,6 +1,6 @@
 import asyncio
-
 import websockets
+import json
 
 # empty set of objects
 connected_clients = set()
@@ -10,7 +10,13 @@ async def handler(websocket):
 	try:
 		# Keep the connection open and handle incoming messages if needed
 		async for message in websocket:
-			await broadcaster(message)
+			data = json.loads(message)
+			message_type = data.get("type")
+
+			if (message_type == "message"):
+				await broadcaster(message)
+			else:
+				await broadcaster(message)
 	except websockets.exceptions.ConnectionClosed as e:
 		print(f"Client disconnected: {e}")
 	finally:
@@ -28,12 +34,12 @@ async def broadcaster(message):
 async def main():
     async with websockets.serve(handler, "", 8001):
         await asyncio.Future()
-		# await broadcaster()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
 
+		# await broadcaster()
 # async def broadcaster():
 # 	while True:
 # 		if connected_clients:
