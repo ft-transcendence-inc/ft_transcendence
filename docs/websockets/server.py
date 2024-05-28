@@ -18,19 +18,11 @@ async def handler(websocket):
 		connected_clients.remove(websocket)
 
 async def broadcaster(message):
-		tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
-		# Wait for all tasks to complete
-		await asyncio.gather(*tasks)
+	# send a message to every connected client
+	tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
+	# Wait for all tasks to complete
+	await asyncio.gather(*tasks)
             
-
-# async def broadcaster():
-# 	while True:
-# 		if connected_clients:
-# 			message = "Hello!"
-# 			tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
-# 			# Wait for all tasks to complete
-# 			await asyncio.gather(*tasks)
-# 		await asyncio.sleep(5)
             
 
 async def main():
@@ -41,3 +33,12 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+# async def broadcaster():
+# 	while True:
+# 		if connected_clients:
+# 			message = "Hello!"
+# 			tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
+# 			# Wait for all tasks to complete
+# 			await asyncio.gather(*tasks)
+# 		await asyncio.sleep(5)
