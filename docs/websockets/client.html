@@ -10,61 +10,80 @@
 <body>
 	<h1>WebSocket Example</h1>
     <button type="button" class="btn btn-light" id="startButton">Start Websocket</button>
+	<input class="form-control" type="text" placeholder="Username" id="username" value="SaladLover42">
 	<br>
 	<textarea id="display" readonly></textarea>
 	<br>
-	<input class="form-control" type="text" placeholder="Default input" id="textMessage">
+	<input class="form-control" type="text" placeholder="Say HALLO!" id="textMessage">
 	<button type="button" class="btn btn-dark" id="message">Send</button>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-		let messages = ["first"];
 		let socket;
 
-		function displayData(array)
+		function displayData(message)
 		{
+			const data = JSON.parse(message);
 			const displayElement = document.getElementById('display');
 
-			const arrayString = array.join(', ');
-
-			displayElement.textContent = `Data: ${arrayString}`;
+			displayElement.value += `${data.user}: ${data.data} (${data.timestamp})\n`;
 		}
         // Function to start WebSocket connection
 		function startWebSocket() {
 			// Create WebSocket connection
 			socket = new WebSocket("ws://localhost:8001");
 
-			// when the connection is open, send some data to the server
-			socket.onopen = function(e) {
+			// when the connection is open
+			socket.onopen = function(e)
+			{
 				console.log("[open] Connection established");
-				console.log("Sending to server");
-				socket.send("My name is John");
 			};
 			
 			// receive messages from the server
-			socket.onmessage = function(event) {
-				messages.push(event.data);
-				displayData(messages);
+			socket.onmessage = function(event)
+			{
+				displayData(event.data);
 				console.log(`[message] Data received from server: ${event.data}`);
 			};
 
 			// close the connection
-			socket.onclose = function(event) {
-			if (event.wasClean) {
-				console.log(`[close] Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-			} else {
-				console.log('[close] Connection died');
-			}
+			socket.onclose = function(event)
+			{
+				if (event.wasClean)
+					console.log(`[close] Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+				else
+					console.log('[close] Connection died');
 			};
 
 			// in case of an error
-			socket.onerror = function(error) {
+			socket.onerror = function(error)
+			{
 				console.error(`[error] ${error.message}`);
 			};
 		}
 
 		function sendMessage(){
 			let message = document.getElementById("textMessage").value;
-			socket.send(message);
+			let username = document.getElementById("username").value;
+			
+			// if websockets exists and is opened
+			if (socket && socket.readyState === WebSocket.OPEN)
+			{
+				// Create a JSON object
+				const jsonMessage = {
+					user: username,
+					data: message,
+					timestamp: new Date().toISOString()
+				};
+	
+				// Convert the JSON object to a string
+				const jsonString = JSON.stringify(jsonMessage);
+	
+				// Send the JSON string over the WebSocket connection
+				socket.send(jsonString);
+
+				// clear input
+				document.getElementById("textMessage").value = "";
+			}
 		}
 
         // start WebSocket connection when button is clicked
