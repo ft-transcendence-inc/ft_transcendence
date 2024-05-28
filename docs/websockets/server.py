@@ -1,25 +1,40 @@
 import asyncio
-
 import websockets
+import json
 
-# empty set of objects
-connected_clients = set()
+# empty dictionary
+chats = {}
 
 async def handler(websocket):
-	connected_clients.add(websocket)
 	try:
 		# Keep the connection open and handle incoming messages if needed
 		async for message in websocket:
-			await broadcaster(message)
+			data = json.loads(message)
+			
+			if (data.get("type") == "message"):
+				chat = data.get("chat_id")
+				
+				# if chat not in chats:
+				if (chat not in chats):
+					chats[chat] = set()
+				chats[chat].add(websocket)
+			elif (data.get("type") == "unsubscribe"):
+				chat = data.get("chat_id")
+				if (chat in chats):
+					chats[chat].remove(websocket)
+					return
+
+			await broadcaster(message, chats[chat])
 	except websockets.exceptions.ConnectionClosed as e:
 		print(f"Client disconnected: {e}")
 	finally:
 		# Remove the client from the set of connected clients
-		connected_clients.remove(websocket)
+		if (chat in chats):
+			chats[chat].remove(websocket)
 
-async def broadcaster(message):
+async def broadcaster(message, clients):
 	# send a message to every connected client
-	tasks = [asyncio.create_task(client.send(message)) for client in connected_clients]
+	tasks = [asyncio.create_task(client.send(message)) for client in clients]
 	# Wait for all tasks to complete
 	await asyncio.gather(*tasks)
             

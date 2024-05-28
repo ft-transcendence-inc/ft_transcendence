@@ -16,6 +16,7 @@
 	<br>
 	<input class="form-control" type="text" placeholder="Say HALLO!" id="textMessage">
 	<button type="button" class="btn btn-dark" id="message">Send</button>
+	<button type="button" class="btn btn-dark" id="unsubscribe">Unsubscribe</button>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
 		let socket;
@@ -70,9 +71,11 @@
 			{
 				// Create a JSON object
 				const jsonMessage = {
+					type : "message",
 					user: username,
 					data: message,
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
+					chat_id: username + "_chat"
 				};
 	
 				// Convert the JSON object to a string
@@ -86,9 +89,35 @@
 			}
 		}
 
+		function unsubscribe(){
+			let username = document.getElementById("username").value;
+			
+			// if websockets exists and is opened
+			if (socket && socket.readyState === WebSocket.OPEN)
+			{
+				// Create a JSON object
+				const jsonMessage = {
+					type: "unsubscribe",
+					user: username,
+					data: null,
+					timestamp: new Date().toISOString(),
+					chat_id: username + "_chat"
+				};
+	
+				// Convert the JSON object to a string
+				const jsonString = JSON.stringify(jsonMessage);
+	
+				// Send the JSON string over the WebSocket connection
+				socket.send(jsonString);
+
+				// clear input
+				document.getElementById("textMessage").value = "";
+			}
+		}
         // start WebSocket connection when button is clicked
         document.getElementById("startButton").addEventListener("click", startWebSocket);
 		document.getElementById("message").addEventListener("click", sendMessage);
+		document.getElementById("unsubscribe").addEventListener("click", unsubscribe);
     </script>
 </body>
 </html>
