@@ -1,2 +1,33 @@
-# Ignore the virtual environment folder
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# If your build process includes running collectstatic, then you probably don't need or want to include staticfiles
+/staticfiles
+
+# Don't commit secret key files or environment files
+.env
+.secret
+
+# Node.js
+node_modules/
+
+# If you're using pipenv
+Pipfile.lock
+
+# If you're using virtualenv:
 venv/
+ENV/
+env/
+.venv/
+.ENV/
