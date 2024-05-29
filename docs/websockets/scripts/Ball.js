@@ -1,6 +1,6 @@
 import { socket } from "./chat.js";
 import { gameCanvas } from "./game.js";
-export class Player
+export class Ball
 {
 	constructor(width, height, color, x, y)
 	{
@@ -26,13 +26,16 @@ export class Player
 	}
 	move()
 	{
-		this.speedX = 0;
-		this.speedY = 0;
-		if (gameCanvas.key != 0 && (gameCanvas.key == 38 || gameCanvas.key == 87))
-			this.speedY = -2;
-		else if (gameCanvas.key != 0 && (gameCanvas.key == 40 || gameCanvas.key == 83))
-			this.speedY = 2;
-		this.y += this.speedY;
+		if (this.speedX > 0)
+			this.speedX = 2;
+		else
+			this.speedX = -2;
+		// this.speedY = 0;
+		// if (gameCanvas.key != 0 && (gameCanvas.key == 38 || gameCanvas.key == 87))
+		// 	this.speedY = -2;
+		// else if (gameCanvas.key != 0 && (gameCanvas.key == 40 || gameCanvas.key == 83))
+		// 	this.speedY = 2;
+		this.x += this.speedX;
 	}
 	send_data()
 	{
