@@ -10,21 +10,17 @@ async def handler(websocket):
 		# Keep the connection open and handle incoming messages if needed
 		async for message in websocket:
 			data = json.loads(message)
+			chat = data.get("chat_id")
 			
 			if (data.get("type") == "message"):
-				chat = data.get("chat_id")
-				
-				# if chat not in chats:
+				await broadcaster(message, chats[chat]) # broadcast the message to all clients that are subscribed to the chat
+			elif (data.get("type") == "unsubscribe"): # client wants to unsubscribe from a chat
+				if (chat in chats):
+					chats[chat].remove(websocket)
+			elif (data.get("type") == "subscribe"): # client wants to subscribe to a chat
 				if (chat not in chats):
 					chats[chat] = set()
 				chats[chat].add(websocket)
-			elif (data.get("type") == "unsubscribe"):
-				chat = data.get("chat_id")
-				if (chat in chats):
-					chats[chat].remove(websocket)
-					return
-
-			await broadcaster(message, chats[chat])
 	except websockets.exceptions.ConnectionClosed as e:
 		print(f"Client disconnected: {e}")
 	finally:
