@@ -1,13 +1,13 @@
 import { socket } from "./socket.js";
 import { Player } from "./PlayerClass.js";
 
-let player = new Player();
+let player = new Player(5, 0);
 player.render();
 
 player.renderer.setAnimationLoop( animate );
 
-function animate() {
-
+function animate()
+{
 	// cube.rotation.x += 0.01;
 	// cube.rotation.y += 0.01;
     player.controls.update();

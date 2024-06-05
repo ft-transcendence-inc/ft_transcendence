@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export class Player
 {
-	constructor()
+	constructor(x, y)
 	{
 		// scene
 		this.scene = new THREE.Scene();
@@ -32,9 +32,10 @@ export class Player
 		this.controls.enableRotate = true;
 		
 		// cube
-		const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		const geometry = new THREE.BoxGeometry( 1, 3, 1 );
 		const material = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
 		const cube = new THREE.Mesh( geometry, material );
+		cube.position.set(x, y, 0);
 		this.scene.add( cube );
 
 		// renderer
